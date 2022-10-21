@@ -17,17 +17,18 @@ private:
     int m_miso=-1;
     int m_mosi=-1;
     int m_cs=-1;
-    int m_timeoutLimit = 100;
+    int m_timeoutLimit = 50;
 
     // We will use this function to handle transmitting SPI commands in order to keep our code clear and concise.
     // It will return the byte received from SPI.transfer()
     uint8_t SPIWrite(uint8_t sendByte);
 public:
-    AMT203V(/* args */);
+    AMT203V(int sck,int miso, int mosi, int cs);
     ~AMT203V();
 
-    bool begin(int sck,int miso, int mosi, int cs);
+    bool begin();
     void stop(void);
+    bool reset(void);
 
     // send the rd_pos command to have the AMT20 begin obtaining the current position
     // @return -1 if error

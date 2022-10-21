@@ -1,21 +1,22 @@
 #include <AMT203-v.h>
 #include <SPI.h>
 
-AMT203V::AMT203V(/* args */)
-{
-}
-
-AMT203V::~AMT203V()
-{
-}
-
-bool AMT203V::begin(int sck,int miso, int mosi, int cs)
+AMT203V::AMT203V(int sck,int miso, int mosi, int cs)
 {
     m_sck = sck;
     m_mosi = mosi;
     m_miso = miso;
     m_cs = cs;
 
+}
+
+AMT203V::~AMT203V()
+{
+}
+
+bool AMT203V::begin()
+{
+    
 
 
     if (m_cs == -1 || m_mosi == -1 || m_miso == -1 || m_sck == -1)
@@ -31,8 +32,10 @@ bool AMT203V::begin(int sck,int miso, int mosi, int cs)
     // Initialize SPI using the SPISettings(speedMaxium, dataOrder, dataAMode) function
     // For our settings we will use a clock rate of 500kHz, and the standard SPI settings
     // of MSB First and SPI Mode 0
-    SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
-    
+    //SPI.beginTransaction(SPISettings(250000, MSBFIRST, SPI_MODE0));
+    //SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
+    //SPI.beginTransaction(SPISettings(1E6, MSBFIRST, SPI_MODE0));
+    SPI.begin();
     // Using SPI.beginTransaction seems to require explicitly setting the beginning state
     // of the CS pin as opposed to the SPI.begin() function that does this for us.
     digitalWrite(m_cs, HIGH);
@@ -44,10 +47,17 @@ void AMT203V::stop(void)
     SPI.endTransaction();
 }
 
+bool AMT203V::reset(void)
+{
+    stop();
+    delayMicroseconds(100);
+    return begin();
+}
+
 int16_t AMT203V::getPos(void)
 {
     uint8_t data;               // this will hold our returned data from the AMT20
-    uint8_t timeoutCounter;     // our timeout incrementer
+    uint8_t timeoutCounter=0;     // our timeout incrementer
     uint16_t currentPosition;   // this 16 bit variable will hold our 12-bit position
     data = SPIWrite(rd_pos);
 
@@ -62,6 +72,7 @@ int16_t AMT203V::getPos(void)
 
         // Obtain the upper position byte. Mask it since we only need it's lower 4 bits, and then
         // shift it left 8 bits to make room for the lower byte.
+        Serial.println("after : " + (String) timeoutCounter);
         currentPosition = (SPIWrite(nop)& 0x0F) << 8;
 
         // OR the next byte with the current position
@@ -94,6 +105,6 @@ uint8_t AMT203V::SPIWrite(uint8_t sendByte)
   digitalWrite(m_cs, HIGH);
 
   // we will delay here to prevent the AMT20 from having to prioritize SPI over obtaining our position
-  delayMicroseconds(10);
+  delayMicroseconds(20);
   return data;
 }

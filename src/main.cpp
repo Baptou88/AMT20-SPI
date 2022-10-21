@@ -1,15 +1,15 @@
 #include <Arduino.h>
 
 #include <AMT203-v.h>
-#define ENC_CS 23
-AMT203V amt;
+
+AMT203V amt(SCK,MISO,MOSI,10);
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  
-  while (!amt.begin(SCK,MISO,MOSI,10))
+  //SPI.begin();
+  while (!amt.begin())
   {
     Serial.println("Init failed");
     delay(500);
@@ -21,6 +21,16 @@ void setup() {
 void loop() {
   
   Serial.println(amt.getPos());
-  delay(1000);
+  delay(100);
+  
+  if (Serial.available())
+  {
+    if (Serial.read()=='r')
+    {
+      amt.reset();
+      Serial.println("reset");
+    }
+    
+  }
   
 }
