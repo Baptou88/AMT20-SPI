@@ -4,7 +4,7 @@ class for interact with AMT20 Devices from Cuidevices with SPI
 
 ROTARY ENCODER ABS 4096PPR/12BIT
 
-| |Arduino Pin Connections    | AMT20 Pin Connections
+| |Arduino Uno Pin Connections    | AMT20 Pin Connections
 |-------------------|---------|----------
 |* SPI Clock (SCK): |Pin 13   |Pin 5
 |* SPI MOSI:        |Pin 11   |Pin 7
@@ -14,6 +14,6 @@ ROTARY ENCODER ABS 4096PPR/12BIT
 |* GND:             |Pin 4
 
 
-#TODO
-
-doesn't work with different board than arduino uno
+Work with:
+-Arduino Uno
+-Heltec wifi lora v2 (take care to not take the default cs pins (18)-> reserved for LoRa)
