@@ -2,13 +2,22 @@
 
 #include <AMT203-v.h>
 
-AMT203V amt(SCK,MISO,MOSI,10);
+
+AMT203V amt(SCK,MISO,MOSI,AMT_CS); //check platformio.ini file to see where is define AMT_CS
+
 
 void setup() {
   // put your setup code here, to run once:
+  delay(100);
   Serial.begin(115200);
 
+  pinMode(18, OUTPUT);
+  digitalWrite(18,HIGH);
+
+  
   //SPI.begin();
+  
+  Serial.println("CS pins: " + (String)AMT_CS);
   while (!amt.begin())
   {
     Serial.println("Init failed");
@@ -20,7 +29,15 @@ void setup() {
 
 void loop() {
   
-  Serial.println(amt.getPos());
+  int16_t value = amt.getPos();
+  if (value == -1)
+  {
+    Serial.write("Error obtaining position.\n");
+     Serial.write("Reset Arduino to restart program.\n");
+  } else {
+    Serial.println("pos: " + String(value));
+  }
+  
   delay(100);
   
   if (Serial.available())
@@ -32,5 +49,5 @@ void loop() {
     }
     
   }
-  
+  delay(100);
 }
