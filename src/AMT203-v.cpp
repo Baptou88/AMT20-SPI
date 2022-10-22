@@ -28,14 +28,24 @@ bool AMT203V::begin()
     pinMode(m_mosi, OUTPUT);
     pinMode(m_miso, INPUT);
     pinMode(m_cs, OUTPUT);
-
+    #if defined(ESP32)
+        //_spi = new SPIClass(VSPI);
+        SPI.setClockDivider(SPI_CLOCK_DIV2);
+        SPI.begin(m_sck,m_miso,m_mosi,m_cs);
+    #else
+        SPI.beginTransaction(SPISettings(SPI_CLOCK_DIV32, MSBFIRST, SPI_MODE0));       //3 to 4 attempt
+    #endif // ESP32
+    
     // Initialize SPI using the SPISettings(speedMaxium, dataOrder, dataAMode) function
     // For our settings we will use a clock rate of 500kHz, and the standard SPI settings
     // of MSB First and SPI Mode 0
+   
+    //SPI.begin();
+    
     //SPI.beginTransaction(SPISettings(250000, MSBFIRST, SPI_MODE0));
-    //SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
-    //SPI.beginTransaction(SPISettings(1E6, MSBFIRST, SPI_MODE0));
-    SPI.begin();
+    
+    //SPI.begin(m_sck,m_miso,m_mosi,m_cs);                                                              //4 to 6 attempt
+    //SPI.beginTransaction(SPISettings(1E6, MSBFIRST, SPI_MODE0));             //3to 5 
     // Using SPI.beginTransaction seems to require explicitly setting the beginning state
     // of the CS pin as opposed to the SPI.begin() function that does this for us.
     digitalWrite(m_cs, HIGH);
@@ -82,8 +92,7 @@ int16_t AMT203V::getPos(void)
         // timeout reached
         // This means we had a problem with the encoder, most likely a lost connection. For our
         // purposes we will alert the user via the serial connection, and then stay here forever.
-        Serial.write("Error obtaining position.\n");
-        Serial.write("Reset Arduino to restart program.\n");
+        
         return -1;
     }
 }
@@ -101,7 +110,13 @@ uint8_t AMT203V::SPIWrite(uint8_t sendByte)
 
   // the AMT20 requires the release of the CS line after each byte
   digitalWrite(m_cs, LOW);
-  data = SPI.transfer(sendByte);
+  #if defined(ESP32)
+    data = SPI.transfer(sendByte);
+  #else
+    data = SPI.transfer(sendByte);
+  #endif // ESP32
+  
+  
   digitalWrite(m_cs, HIGH);
 
   // we will delay here to prevent the AMT20 from having to prioritize SPI over obtaining our position

@@ -17,7 +17,8 @@ private:
     int m_miso=-1;
     int m_mosi=-1;
     int m_cs=-1;
-    int m_timeoutLimit = 50;
+    int m_timeoutLimit = 100;
+    SPIClass* _spi =    NULL;
 
     // We will use this function to handle transmitting SPI commands in order to keep our code clear and concise.
     // It will return the byte received from SPI.transfer()
@@ -26,6 +27,7 @@ public:
     AMT203V(int sck,int miso, int mosi, int cs);
     ~AMT203V();
 
+    //@return -1 if error
     bool begin();
     void stop(void);
     bool reset(void);
