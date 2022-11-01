@@ -36,6 +36,9 @@ public:
     // @return -1 if error
     int16_t getPos(void);
 
+    // Reset zero point on initialization
+    int16_t set_zero_pos(void);
+
     void setTimeoutLimit(int timeoutLimit);
 };
 
