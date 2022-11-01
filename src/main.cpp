@@ -10,11 +10,19 @@ void setup() {
   // put your setup code here, to run once:
   delay(100);
   Serial.begin(115200);
-
+  
+  #if defined(WIFI_LoRa_32_V2)
+  
+  //to communicate with the amt20 by the heltec esp32 i use a different cs pin ,
+  //so i desacivate the lora cs pin
   pinMode(18, OUTPUT);
   digitalWrite(18,HIGH);
-
   
+  #endif // ESP32
+  
+  
+
+
   //SPI.begin();
   
   Serial.println("CS pins: " + (String)AMT_CS);

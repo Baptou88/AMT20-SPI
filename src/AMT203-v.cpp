@@ -97,6 +97,13 @@ int16_t AMT203V::getPos(void)
     }
 }
 
+   
+int16_t AMT203V::set_zero_pos(void)
+{
+  SPIWrite(set_zero_point);
+  delayMicroseconds(100);
+}
+
 void AMT203V::setTimeoutLimit(int timeoutLimit)
 {
     m_timeoutLimit = timeoutLimit;
